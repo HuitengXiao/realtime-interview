@@ -8,9 +8,9 @@ Realtime Interview 是一个可自托管、支持组织隔离的实时面试工�
 
 ## 演示视频
 
-[![观看 Realtime Interview 演示视频](docs/assets/realtime-interview-demo-cover.jpg)](docs/assets/realtime-interview-demo.mp4)
+[![观看 Realtime Interview 演示视频](docs/assets/realtime-interview-demo-cover.jpg)](https://x.com/huitengXiao/status/2091941171295859148)
 
-点击图片即可观看约 2 分钟的产品演示，视频包含中英文字幕。
+点击图片即可在 X 上观看约 2 分钟的产品演示，视频包含中英文字幕。
 
 ## 功能
 

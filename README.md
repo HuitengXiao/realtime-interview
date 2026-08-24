@@ -12,10 +12,10 @@ PostgreSQL/Prisma data layer.
 
 ## Demo video
 
-[![Watch the Realtime Interview demo](docs/assets/realtime-interview-demo-cover.jpg)](docs/assets/realtime-interview-demo.mp4)
+[![Watch the Realtime Interview demo](docs/assets/realtime-interview-demo-cover.jpg)](https://x.com/huitengXiao/status/2091941171295859148)
 
-Click the image to watch the 2-minute product walkthrough with Chinese and
-English subtitles.
+Click the image to watch the 2-minute product walkthrough on X, with Chinese
+and English subtitles.
 
 ## Features
 
