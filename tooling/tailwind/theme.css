@@ -1,0 +1,136 @@
+@theme {
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-card: var(--card);
+	--color-card-foreground: var(--card-foreground);
+	--color-popover: var(--popover);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-success: var(--success);
+	--color-success-foreground: var(--success-foreground);
+	--color-destructive: var(--destructive);
+	--color-destructive-foreground: var(--destructive-foreground);
+	--color-border: var(--border);
+	--color-input: var(--input);
+	--color-ring: var(--ring);
+	--color-highlight: var(--highlight);
+	--color-highlight-foreground: var(--highlight-foreground);
+	--radius-lg: var(--radius);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-sm: calc(var(--radius) - 4px);
+
+	--shadow-xs: 0 2px 8px 0 rgb(0, 0, 0, 0.025), 0 0 1px rgba(0, 0, 0, 0.1);
+	--shadow-sm: 0 4px 16px 0 rgb(0, 0, 0, 0.05), 0 0 1px rgba(0, 0, 0, 0.1);
+	--shadow-md: 0 6px 24px 0 rgb(0, 0, 0, 0.075), 0 0 1px rgba(0, 0, 0, 0.1);
+	--shadow-lg: 0 8px 32px 0 rgb(0, 0, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.1);
+	--shadow-xl: 0 12px 48px 0 rgb(0, 0, 0, 0.125), 0 0 1px rgba(0, 0, 0, 0.1);
+	--shadow-2xl: 0 16px 64px 0 rgb(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.1);
+
+	--animation-accordion-down: accordion-down 0.2s ease-out;
+	--animation-accordion-up: accordion-up 0.2s ease-out;
+
+	@keyframes accordion-down {
+		from {
+			height: 0;
+		}
+		to {
+			height: var(--radix-accordion-content-height);
+		}
+	}
+	@keyframes accordion-up {
+		from {
+			height: var(--radix-accordion-content-height);
+		}
+		to {
+			height: 0;
+		}
+	}
+}
+
+@layer base {
+	:root {
+		--border: #e2e8f0;
+		--input: #f1f5f9;
+		--ring: #f97316;
+		--background: #ffffff;
+		--foreground: #1e293b;
+		--primary: #f97316;
+		--primary-foreground: #ffffff;
+		--secondary: #64748b;
+		--secondary-foreground: #ffffff;
+		--destructive: #dc2626;
+		--destructive-foreground: #ffffff;
+		--success: #16a34a;
+		--success-foreground: #ffffff;
+		--muted: #f8fafc;
+		--muted-foreground: #64748b;
+		--accent: #f1f5f9;
+		--accent-foreground: #1e293b;
+		--popover: #ffffff;
+		--popover-foreground: #1e293b;
+		--card: #ffffff;
+		--card-foreground: #1e293b;
+		--highlight: #fb923c;
+		--highlight-foreground: #ffffff;
+		--radius: 0.75rem;
+
+		/* fumadocs */
+		--fd-banner-height: 4.5rem;
+	}
+
+	.dark {
+		--border: #334155;
+		--input: #1e293b;
+		--ring: #fb923c;
+		--background: #0f172a;
+		--foreground: #f1f5f9;
+		--primary: #fb923c;
+		--primary-foreground: #1e293b;
+		--secondary: #475569;
+		--secondary-foreground: #f1f5f9;
+		--destructive: #ef4444;
+		--destructive-foreground: #ffffff;
+		--success: #22c55e;
+		--success-foreground: #ffffff;
+		--muted: #1e293b;
+		--muted-foreground: #94a3b8;
+		--accent: #334155;
+		--accent-foreground: #f1f5f9;
+		--popover: #1e293b;
+		--popover-foreground: #f1f5f9;
+		--card: #1e293b;
+		--card-foreground: #f1f5f9;
+		--highlight: #fdba74;
+		--highlight-foreground: #1e293b;
+	}
+
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		@apply border-border;
+	}
+}
+
+@utility container {
+	margin-inline: auto;
+	padding-inline: 1.5rem;
+	width: 100%;
+	max-width: var(--container-7xl);
+}
+
+@utility no-scrollbar {
+	&::-webkit-scrollbar {
+		display: none;
+	}
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}

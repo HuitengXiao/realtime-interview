@@ -1,0 +1,24 @@
+{
+	"name": "@repo/realtime",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"build": "tsc --noEmit",
+		"dev": "tsx watch src/server.ts",
+		"start": "tsx src/server.ts",
+		"type-check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@repo/database": "workspace:*",
+		"@repo/interview": "workspace:*",
+		"tsx": "^4.19.3",
+		"ws": "^8.18.0"
+	},
+	"devDependencies": {
+		"@repo/tsconfig": "workspace:*",
+		"@types/node": "22.13.0",
+		"@types/ws": "^8.5.14",
+		"esbuild": "^0.21.5",
+		"typescript": "5.7.3"
+	}
+}

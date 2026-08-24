@@ -1,0 +1,310 @@
+datasource db {
+  provider = "postgresql"
+
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator zod {
+  provider         = "zod-prisma-types"
+  output           = "../src/zod"
+  createInputTypes = false
+  addIncludeType   = false
+  addSelectType    = false
+}
+
+model User {
+  id                 String       @id
+  name               String
+  email              String
+  emailVerified      Boolean
+  image              String?
+  createdAt          DateTime
+  updatedAt          DateTime
+  username           String?
+  role               String?
+  banned             Boolean?
+  banReason          String?
+  banExpires         DateTime?
+  onboardingComplete Boolean      @default(false)
+  paymentsCustomerId String?
+  locale             String?
+  sessions           Session[]
+  accounts           Account[]
+  passkeys           Passkey[]
+  invitations        Invitation[]
+  purchases          Purchase[]
+  memberships        Member[]
+  aiChats            AiChat[]
+  createdInterviews  InterviewRoom[] @relation("InterviewCreator")
+  interviewMessages  InterviewMessage[] @relation("InterviewMessageAuthor")
+  createdRegistrationInviteCodes RegistrationInviteCode[] @relation("RegistrationInviteCodeCreator")
+  createdOrganizationJoinCodes OrganizationJoinCode[] @relation("OrganizationJoinCodeCreator")
+
+  @@unique([email])
+  @@unique([username])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
+
+  activeOrganizationId String?
+
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id           String    @id
+  accountId    String
+  providerId   String
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken  String?
+  refreshToken String?
+  idToken      String?
+  expiresAt    DateTime?
+  password     String?
+
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+
+  createdAt DateTime?
+  updatedAt DateTime?
+
+  @@map("verification")
+}
+
+model Passkey {
+  id           String    @id
+  name         String?
+  publicKey    String
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  credentialID String
+  counter      Int
+  deviceType   String
+  backedUp     Boolean
+  transports   String?
+  createdAt    DateTime?
+
+  @@map("passkey")
+}
+
+model Organization {
+  id                 String       @id
+  name               String
+  slug               String?
+  logo               String?
+  createdAt          DateTime
+  metadata           String?
+  paymentsCustomerId String?
+  members            Member[]
+  invitations        Invitation[]
+  purchases          Purchase[]
+  aiChats            AiChat[]
+  interviewRooms     InterviewRoom[]
+  joinCodes          OrganizationJoinCode[]
+
+  @@unique([slug])
+  @@map("organization")
+}
+
+model Member {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           String
+  createdAt      DateTime
+
+  @@unique([userId, organizationId])
+  @@map("member")
+}
+
+model Invitation {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+  role           String?
+  status         String
+  expiresAt      DateTime
+  inviterId      String
+  user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@map("invitation")
+}
+
+model RegistrationInviteCode {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  expiresAt   DateTime
+  revoked     Boolean  @default(false)
+  usageCount  Int      @default(0)
+  lastUsedAt  DateTime?
+  createdAt   DateTime @default(now())
+  createdById String?
+  createdBy   User?    @relation("RegistrationInviteCodeCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([expiresAt, revoked])
+  @@index([createdById])
+  @@map("registration_invite_code")
+}
+
+model OrganizationJoinCode {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  code           String       @unique
+  expiresAt      DateTime
+  revoked        Boolean      @default(false)
+  usageCount     Int          @default(0)
+  lastUsedAt     DateTime?
+  createdAt      DateTime     @default(now())
+  createdById    String?
+  createdBy      User?        @relation("OrganizationJoinCodeCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  @@index([expiresAt, revoked])
+  @@index([createdById])
+  @@map("organization_join_code")
+}
+
+enum PurchaseType {
+  SUBSCRIPTION
+  ONE_TIME
+}
+
+model Purchase {
+  id             String        @id @default(cuid())
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId String?
+  user           User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String?
+  type           PurchaseType
+  customerId     String
+  subscriptionId String?       @unique
+  productId      String
+  status         String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([subscriptionId])
+}
+
+model AiChat {
+  id             String        @id @default(cuid())
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String?
+  user           User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title          String?
+  messages       Json[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model InterviewRoom {
+  id              String                     @id @default(cuid())
+  organizationId  String
+  organization    Organization               @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdById     String
+  createdBy       User                       @relation("InterviewCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  title           String
+  intervieweeName String?
+  status          String                     @default("draft")
+  sourceLang      String                     @default("auto")
+  targetLang      String                     @default("auto")
+  translationEngine String?
+  settings        Json?
+  createdAt       DateTime                   @default(now())
+  updatedAt       DateTime                   @updatedAt
+  messages        InterviewMessage[]
+  notes           InterviewNotes?
+  transcriptSegments InterviewTranscriptSegment[]
+
+  @@index([organizationId, createdAt])
+  @@index([createdById])
+  @@map("interview_room")
+}
+
+model InterviewMessage {
+  id          String        @id @default(cuid())
+  interviewId String
+  interview   InterviewRoom @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  authorId    String?
+  author      User?         @relation("InterviewMessageAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  role        String
+  content     String
+  metadata    Json?
+  createdAt   DateTime      @default(now())
+
+  @@index([interviewId, createdAt])
+  @@map("interview_message")
+}
+
+model InterviewNotes {
+  id          String        @id @default(cuid())
+  interviewId String        @unique
+  interview   InterviewRoom @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  content     String        @default("")
+  updatedById String?
+  updatedAt   DateTime      @updatedAt
+  createdAt   DateTime      @default(now())
+
+  @@map("interview_notes")
+}
+
+model InterviewTranscriptSegment {
+  id          String        @id @default(cuid())
+  interviewId String
+  interview   InterviewRoom @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  segmentKey  String
+  speaker     String?
+  startMs     Int
+  endMs       Int
+  text        String
+  translation String?
+  language    String?
+  sourceLang  String?
+  targetLang  String?
+  translationEngine String?
+  isFinal     Boolean       @default(true)
+  metadata    Json?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@unique([interviewId, segmentKey])
+  @@index([interviewId, startMs])
+  @@map("interview_transcript_segment")
+}

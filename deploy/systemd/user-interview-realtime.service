@@ -1,0 +1,19 @@
+[Unit]
+Description=Realtime Interview WebSocket gateway
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=interview
+Group=interview
+WorkingDirectory=/opt/user-interview
+Environment=NODE_ENV=production
+EnvironmentFile=/opt/user-interview/.env
+ExecStart=/usr/bin/node /opt/user-interview/realtime/server.cjs
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+
+[Install]
+WantedBy=multi-user.target

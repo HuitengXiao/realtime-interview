@@ -1,0 +1,22 @@
+{
+	"dependencies": {
+		"@aws-sdk/client-s3": "3.437.0",
+		"@aws-sdk/s3-request-presigner": "3.437.0",
+		"@repo/config": "workspace:*",
+		"@repo/logs": "workspace:*"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"@repo/tsconfig": "workspace:*",
+		"@types/node": "^22.13.0",
+		"tsx": "4.23.11"
+	},
+	"main": "./index.ts",
+	"name": "@repo/storage",
+	"scripts": {
+		"test": "tsx --test provider/s3/index.test.ts",
+		"type-check": "tsc --noEmit"
+	},
+	"types": "./**/.ts",
+	"version": "0.0.0"
+}

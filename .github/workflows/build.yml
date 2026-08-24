@@ -1,0 +1,110 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/ci
+      DIRECT_URL: postgresql://ci:ci@127.0.0.1:5432/ci
+      BETTER_AUTH_SECRET: ci-only-secret-that-is-never-used-at-runtime
+      REALTIME_AUTH_SECRET: ci-only-realtime-secret-that-is-never-used-at-runtime
+      NEXT_PUBLIC_SITE_URL: https://app.example.com
+      NEXT_PUBLIC_INTERVIEW_REALTIME_URL: wss://app.example.com/realtime
+      INTERVIEW_ALLOWED_ORIGIN: https://app.example.com
+      INTERVIEW_REALTIME_PORT: "3001"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.3.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type-check
+        run: pnpm type-check
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Build all workspaces
+        run: pnpm build
+
+      - name: Package Linux runtime
+        run: |
+          pnpm --filter @repo/realtime exec esbuild src/server.ts \
+            --bundle \
+            --platform=node \
+            --target=node22 \
+            --format=cjs \
+            --outfile=dist/server.cjs \
+            --external:@prisma/client
+
+          mkdir -p runtime/apps/web/.next runtime/realtime runtime/deploy
+          cp -R apps/web/.next/standalone/. runtime/
+          cp -R apps/web/.next/static runtime/apps/web/.next/static
+          cp -R apps/web/public runtime/apps/web/public
+          cp apps/realtime/dist/server.cjs runtime/realtime/server.cjs
+          cp -R deploy/nginx deploy/systemd runtime/deploy/
+
+          test -f runtime/apps/web/server.js
+          test -d runtime/node_modules/@prisma/client
+          (cd runtime && node -e "require('@prisma/client')")
+
+          NODE_ENV=production \
+          INTERVIEW_ALLOWED_ORIGIN=https://app.example.com \
+          INTERVIEW_REALTIME_PORT=3101 \
+          node runtime/realtime/server.cjs &
+          realtime_pid=$!
+          trap 'kill "$realtime_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:3101/health >/dev/null; then
+              break
+            fi
+            if ! kill -0 "$realtime_pid" 2>/dev/null; then
+              wait "$realtime_pid"
+            fi
+            sleep 0.25
+          done
+          curl --fail --silent http://127.0.0.1:3101/health
+          kill "$realtime_pid"
+          wait "$realtime_pid" || true
+          trap - EXIT
+
+          tar -C runtime -czf user-interview-release.tar.gz .
+
+      - name: Upload Linux runtime
+        uses: actions/upload-artifact@v4
+        with:
+          name: user-interview-linux-${{ github.sha }}
+          path: user-interview-release.tar.gz
+          compression-level: 0
+          retention-days: 7
