@@ -113,3 +113,8 @@ pnpm --filter @repo/realtime start
 ## 贡献与安全
 
 提交 pull request 前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。请按照 [SECURITY.md](SECURITY.md) 的说明私下报告安全或隐私问题，不要通过公开 issue 报告。将仓库公开前，请完成[开源发布检查清单](docs/open-source-release.md)。
+
+## 许可证
+
+Realtime Interview 使用 [GNU Affero General Public License v3.0](LICENSE)
+许可证发布。

@@ -141,3 +141,8 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. Report
 security or privacy issues privately as described in [SECURITY.md](SECURITY.md),
 not through a public issue. Before making a repository public, complete the
 [open-source release checklist](docs/open-source-release.md).
+
+## License
+
+Realtime Interview is licensed under the
+[GNU Affero General Public License v3.0](LICENSE).
