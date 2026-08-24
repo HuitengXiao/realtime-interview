@@ -6,6 +6,12 @@ Realtime Interview 是一个可自托管、支持组织隔离的实时面试工�
 
 本仓库是一个 pnpm/Turborepo monorepo，包含 Next.js Web 应用、专用 WebSocket 实时网关、共享面试逻辑，以及 PostgreSQL/Prisma 数据层。
 
+## 演示视频
+
+[![观看 Realtime Interview 演示视频](docs/assets/realtime-interview-demo-cover.jpg)](docs/assets/realtime-interview-demo.mp4)
+
+点击图片即可观看约 2 分钟的产品演示，视频包含中英文字幕。
+
 ## 功能
 
 - 按组织隔离的面试房间和访问控制

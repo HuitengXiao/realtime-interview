@@ -7,7 +7,7 @@
 		"dev": "dotenv -c -- turbo dev --concurrency 15",
 		"lint": "biome lint .",
 		"test": "pnpm --recursive --if-present test",
-		"type-check": "turbo type-check",
+		"type-check": "pnpm --filter @repo/database generate && pnpm --filter @repo/web generate && turbo type-check",
 		"clean": "turbo clean",
 		"format": "biome format . --write"
 	},

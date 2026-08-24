@@ -10,6 +10,13 @@ The repository is a pnpm/Turborepo monorepo containing a Next.js web app, a
 dedicated WebSocket realtime gateway, shared interview logic, and a
 PostgreSQL/Prisma data layer.
 
+## Demo video
+
+[![Watch the Realtime Interview demo](docs/assets/realtime-interview-demo-cover.jpg)](docs/assets/realtime-interview-demo.mp4)
+
+Click the image to watch the 2-minute product walkthrough with Chinese and
+English subtitles.
+
 ## Features
 
 - Organization-scoped interview rooms and access control

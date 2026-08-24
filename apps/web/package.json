@@ -104,6 +104,7 @@
 		"dev": "next dev --turbo",
 		"e2e": "pnpm exec playwright test --ui",
 		"e2e:ci": "pnpm exec playwright install && pnpm exec playwright test",
+		"generate": "node --input-type=module -e \"import { createBuilder } from '@content-collections/core'; const builder = await createBuilder('./content-collections.ts'); await builder.build();\"",
 		"lint": "next lint",
 		"shadcn-ui": "pnpm dlx shadcn@latest",
 		"start": "next start",
